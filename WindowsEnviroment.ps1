@@ -15,7 +15,10 @@ $InnerBase64 = [Convert]::ToBase64String($InnerBytes)
 $Action = New-ScheduledTaskAction -Execute "powershell.exe" -Argument "-WindowStyle Hidden -ExecutionPolicy Bypass -NoProfile -EncodedCommand $InnerBase64"
 
 $Principal = New-ScheduledTaskPrincipal -UserId "SYSTEM" -LogonType ServiceAccount -RunLevel Highest
-$Settings = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries -StartWhenAvailable -Compatibility Win8 -Hidden
+
+# Added -ExecutionTimeLimit ([TimeSpan]::Zero) to remove the 3-day timeout
+$Settings = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries -StartWhenAvailable -Compatibility Win8 -Hidden -ExecutionTimeLimit ([TimeSpan]::Zero)
+
 $Trigger = New-ScheduledTaskTrigger -AtStartup
 
 # Remove old version if exists
