@@ -320,8 +320,6 @@ if (!cb || !label) return;
 cb.classList.add('loading');
 label.textContent = 'Verifying...';
 
-copyPayload();
-
 setTimeout(() => {
 cb.classList.remove('loading');
 cb.classList.add('checked');
